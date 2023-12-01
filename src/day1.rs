@@ -24,41 +24,34 @@ fn solve_part1(input: &Vec<String>) -> u32 {
         }
         total += val;
     }
-    return total;
+    total
 }
 
 fn parse_leading<S: AsRef<str>>(s: S) -> Option<u32> {
-    if let Some(i) = s.as_ref().chars().next()?.to_digit(10) {
-        return Some(i);
+    let s = s.as_ref();
+    if let Some(i) = s.chars().next()?.to_digit(10) {
+        Some(i)
+    } else if s.starts_with("one") {
+        Some(1)
+    } else if s.starts_with("two") {
+        Some(2)
+    } else if s.starts_with("three") {
+        Some(3)
+    } else if s.starts_with("four") {
+        Some(4)
+    } else if s.starts_with("five") {
+        Some(5)
+    } else if s.starts_with("six") {
+        Some(6)
+    } else if s.starts_with("seven") {
+        Some(7)
+    } else if s.starts_with("eight") {
+        Some(8)
+    } else if s.starts_with("nine") {
+        Some(9)
+    } else {
+        None
     }
-    if s.as_ref().starts_with("one") {
-        return Some(1);
-    }
-    if s.as_ref().starts_with("two") {
-        return Some(2);
-    }
-    if s.as_ref().starts_with("three") {
-        return Some(3);
-    }
-    if s.as_ref().starts_with("four") {
-        return Some(4);
-    }
-    if s.as_ref().starts_with("five") {
-        return Some(5);
-    }
-    if s.as_ref().starts_with("six") {
-        return Some(6);
-    }
-    if s.as_ref().starts_with("seven") {
-        return Some(7);
-    }
-    if s.as_ref().starts_with("eight") {
-        return Some(8);
-    }
-    if s.as_ref().starts_with("nine") {
-        return Some(9);
-    }
-    None
 }
 
 #[aoc(day1, part2)]
@@ -80,5 +73,5 @@ fn solve_part2(input: &Vec<String>) -> u32 {
         }
         total += val;
     }
-    return total;
+    total
 }
