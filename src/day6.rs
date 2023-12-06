@@ -53,9 +53,11 @@ fn generate(input: &str) -> (Vec<Race>, Race) {
 }
 
 pub fn roots(time: i64, record: i64) -> (i64, i64) {
-    let s = ((time * time - 4 * record) as f64).sqrt() / 2.0;
-    let halftime = time as f64 / 2.0;
-    ((halftime - s).ceil() as i64, (halftime + s).floor() as i64)
+    let s = ((time * time - 4 * record) as f64).sqrt();
+    (
+        ((time as f64 - s) / 2.0).ceil() as i64,
+        ((time as f64 + s) / 2.0).floor() as i64,
+    )
 }
 
 #[aoc(day6, part1)]
