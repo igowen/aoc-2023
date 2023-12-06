@@ -146,7 +146,7 @@ fn solve_part2(input: &Almanac) -> i64 {
                             }
                         } else if seed.start < m.end {
                             // We have an unused chunk of the map, so we can drop the unused
-                            // portion and hite the `seed.start == m.start` case on the next
+                            // portion and hit the `seed.start == m.start` case on the next
                             // iteration of the loop.
                             *m = Offset {
                                 start: seed.start,
