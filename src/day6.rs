@@ -2,8 +2,8 @@ use aoc_runner_derive::{aoc, aoc_generator};
 
 #[derive(Clone, Debug)]
 struct Race {
-    time: u64,
-    distance: u64,
+    time: i64,
+    distance: i64,
 }
 
 #[aoc_generator(day6)]
@@ -52,12 +52,10 @@ fn generate(input: &str) -> (Vec<Race>, Race) {
     )
 }
 
-/// ```
-/// # use aoc_2023::day6::distance;
-/// assert!(distance(4, 7) == 12);
-/// ```
-pub fn distance(hold: u64, total: u64) -> u64 {
-    hold * (total - hold)
+pub fn roots(time: i64, record: i64) -> (i64, i64) {
+    let s = ((time * time - 4 * record) as f64).sqrt() / 2.0;
+    let halftime = time as f64 / 2.0;
+    ((halftime - s).ceil() as i64, (halftime + s).floor() as i64)
 }
 
 #[aoc(day6, part1)]
@@ -65,16 +63,14 @@ fn solve_part1((input, _): &(Vec<Race>, Race)) -> i64 {
     input
         .iter()
         .map(|race| {
-            (0..race.time)
-                .filter(|i| distance(*i, race.time) > race.distance)
-                .count() as i64
+            let (min, max) = roots(race.time, race.distance);
+            max - min + 1
         })
         .product()
 }
 
 #[aoc(day6, part2)]
 fn solve_part2((_, race): &(Vec<Race>, Race)) -> i64 {
-    (0..race.time)
-        .filter(|i| distance(*i, race.time) > race.distance)
-        .count() as i64
+    let (min, max) = roots(race.time, race.distance);
+    max - min + 1
 }
