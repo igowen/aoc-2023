@@ -52,6 +52,24 @@ fn generate(input: &str) -> (Vec<Race>, Race) {
     )
 }
 
+// The idea here is that the distance traveled for a given total race time and
+// hold time is given by the formula:
+//
+// hold_time * (total_time - hold_time)
+//
+// So we want the number of values for hold_time that satisfy:
+//
+// hold_time * (total_time - hold_time) > record_distance
+//
+// Now, let `x` be the hold time, `b` be the total time, and `c` be the
+// distance record. After applying a small amount of algebra, we can see that we
+// need to find all values of x that satisfy the inequality
+//
+// x^2 - xb + c < 0
+//
+// Note that the only values of x that satisfy this inequality lie between the
+// roots of this quadratic equation, so all we need to do is compute these two
+// roots and subtract the smaller from the larger (and add one).
 pub fn roots(time: i64, record: i64) -> (i64, i64) {
     let s = ((time * time - 4 * record) as f64).sqrt();
     (
