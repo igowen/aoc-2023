@@ -122,7 +122,9 @@ fn solve_part2(input: &Almanac) -> i64 {
                                 start: seed.start,
                                 end: m.start,
                             });
-                            // Fast forward so we match the start of the map range.
+                            // Fast forward so we match the start of the map range -- the second
+                            // part of the split will be handled by the branch immediately follwing
+                            // this one (on the next iteration).
                             seed.start = m.start;
                         } else if seed.start == m.start {
                             if seed.end <= m.end {
@@ -138,11 +140,14 @@ fn solve_part2(input: &Almanac) -> i64 {
                                     start: seed.start + m.diff,
                                     end: m.end + m.diff,
                                 });
+                                // Again, the second part of the split will be handled by the next
+                                // iteration of the loop.
                                 seed.start = m.end;
                             }
                         } else if seed.start < m.end {
-                            // Drop some of the map so the start is aligned with the current input
-                            // range.
+                            // We have an unused chunk of the map, so we can drop the unused
+                            // portion and hite the `seed.start == m.start` case on the next
+                            // iteration of the loop.
                             *m = Offset {
                                 start: seed.start,
                                 end: m.end,
