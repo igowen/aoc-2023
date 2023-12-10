@@ -321,14 +321,16 @@ fn solve_part2(input: &Map) -> i64 {
                 inside = !inside;
                 last_corner = tiles[y][x];
             } else if tiles[y][x].is_corner() {
+                // The intuition here is that when we're on a horizontal edge, the next corner will
+                // tell us if we have changed sides. If the path leaves the horizontal in the opposite
+                // direction that it entered, the second corner doesn't count as a crossing since we
+                // already counted it coming in (in the previous branch).
                 if !last_corner.is_opposite_corner(tiles[y][x]) {
                     inside = !inside;
                 }
                 last_corner = Tile::Empty;
-            } else if tiles[y][x] == Tile::Empty {
-                if inside {
-                    area += 1;
-                }
+            } else if tiles[y][x] == Tile::Empty && inside {
+                area += 1;
             }
         }
     }
