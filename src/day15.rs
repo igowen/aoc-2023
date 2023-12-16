@@ -1,4 +1,4 @@
-use aoc_runner_derive::{aoc, aoc_generator};
+use aoc_runner_derive::aoc;
 
 fn hash(s: &str) -> u8 {
     s.chars().fold(0, |acc, c| ((acc + c as i64) * 17) % 256) as u8
