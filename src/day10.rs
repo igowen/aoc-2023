@@ -1,3 +1,4 @@
+use crate::Dir;
 use std::fmt::Display;
 
 use aoc_runner_derive::{aoc, aoc_generator};
@@ -100,25 +101,6 @@ impl Tile {
             || (self == Tile::SE && other == Tile::NW)
             || (self == Tile::NE && other == Tile::SW)
             || (self == Tile::SW && other == Tile::NE)
-    }
-}
-
-#[derive(PartialEq, Eq, Copy, Clone, Debug)]
-enum Dir {
-    N,
-    S,
-    E,
-    W,
-}
-
-impl Dir {
-    fn inverse(self) -> Self {
-        match self {
-            Dir::N => Dir::S,
-            Dir::S => Dir::N,
-            Dir::E => Dir::W,
-            Dir::W => Dir::E,
-        }
     }
 }
 

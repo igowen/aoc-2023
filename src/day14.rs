@@ -1,3 +1,4 @@
+use crate::Dir;
 use std::{collections::HashMap, fmt::Display};
 
 use aoc_runner_derive::{aoc, aoc_generator};
@@ -17,14 +18,6 @@ impl Display for Rock {
             Rock::None => write!(f, "."),
         }
     }
-}
-
-#[derive(PartialEq, Eq, Copy, Clone, Debug)]
-enum Dir {
-    N,
-    S,
-    E,
-    W,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

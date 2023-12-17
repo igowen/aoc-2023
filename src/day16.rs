@@ -1,3 +1,4 @@
+use crate::Dir;
 use aoc_runner_derive::{aoc, aoc_generator};
 use array2d::Array2D;
 
@@ -15,71 +16,9 @@ enum Mirror {
     Empty,
 }
 
-#[derive(PartialEq, Eq, Copy, Clone, Debug)]
-enum Dir {
-    N,
-    S,
-    E,
-    W,
-}
-
-impl Dir {
-    fn cw(self) -> Self {
-        match self {
-            Dir::N => Dir::E,
-            Dir::E => Dir::S,
-            Dir::S => Dir::W,
-            Dir::W => Dir::N,
-        }
-    }
-    fn ccw(self) -> Self {
-        match self {
-            Dir::N => Dir::W,
-            Dir::W => Dir::S,
-            Dir::S => Dir::E,
-            Dir::E => Dir::N,
-        }
-    }
-}
-
 #[derive(Clone, Debug)]
 struct Input {
     map: Array2D<Mirror>,
-}
-
-impl Input {
-    fn neighbor(&self, (y, x): (usize, usize), dir: Dir) -> Option<(usize, usize)> {
-        match dir {
-            Dir::N => {
-                if y == 0 {
-                    None
-                } else {
-                    Some((y - 1, x))
-                }
-            }
-            Dir::S => {
-                if y >= self.map.num_rows() - 1 {
-                    None
-                } else {
-                    Some((y + 1, x))
-                }
-            }
-            Dir::W => {
-                if x == 0 {
-                    None
-                } else {
-                    Some((y, x - 1))
-                }
-            }
-            Dir::E => {
-                if x >= self.map.num_columns() - 1 {
-                    None
-                } else {
-                    Some((y, x + 1))
-                }
-            }
-        }
-    }
 }
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -156,7 +95,7 @@ fn trace(input: &Input, start: LightVector) -> i64 {
         }
         current.extend(splits.drain(..));
         current.retain_mut(|v| {
-            if let Some(next) = input.neighbor(v.origin, v.dir) {
+            if let Some(next) = v.dir.neighbor(v.origin, &input.map) {
                 let visited = match v.dir {
                     Dir::N => &mut energized[next].1 .0,
                     Dir::S => &mut energized[next].1 .1,
