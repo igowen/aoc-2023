@@ -33,13 +33,6 @@ enum Action {
 }
 
 impl Action {
-    fn is_terminal(&self) -> bool {
-        match self {
-            Action::Goto(_) => false,
-            _ => true,
-        }
-    }
-
     fn goto(&self) -> Option<&str> {
         match self {
             Action::Goto(s) => Some(&s),
@@ -86,7 +79,6 @@ impl Part {
 
 #[derive(Clone, Debug)]
 struct RuleSet {
-    name: String,
     rules: Vec<Rule>,
     default_action: Action,
 }
@@ -140,9 +132,8 @@ fn generate(input: &str) -> Input {
                 other => Action::Goto(other.to_string()),
             };
             (
-                name.clone(),
+                name,
                 RuleSet {
-                    name,
                     rules,
                     default_action,
                 },
@@ -196,4 +187,113 @@ fn solve_part1(input: &Input) -> u64 {
             }
         })
         .sum::<u64>()
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+struct PossibleParts {
+    x: (u32, u32),
+    m: (u32, u32),
+    a: (u32, u32),
+    s: (u32, u32),
+}
+
+impl PossibleParts {
+    fn new() -> Self {
+        PossibleParts {
+            x: (1, 4000),
+            m: (1, 4000),
+            a: (1, 4000),
+            s: (1, 4000),
+        }
+    }
+
+    fn include(&self, rule: &Rule) -> Option<Self> {
+        let mut reduced = self.clone();
+        let ta = match rule.attribute {
+            Attribute::X => &mut reduced.x,
+            Attribute::M => &mut reduced.m,
+            Attribute::A => &mut reduced.a,
+            Attribute::S => &mut reduced.s,
+        };
+        match rule.bound {
+            Bound::Gt(min) => {
+                if ta.1 < min {
+                    return None;
+                } else {
+                    ta.0 = min + 1;
+                }
+            }
+            Bound::Lt(max) => {
+                if ta.0 > max {
+                    return None;
+                } else {
+                    ta.1 = max - 1;
+                }
+            }
+        }
+        Some(reduced)
+    }
+
+    fn exclude(&self, rule: &Rule) -> Option<Self> {
+        let mut reduced = self.clone();
+        let ta = match rule.attribute {
+            Attribute::X => &mut reduced.x,
+            Attribute::M => &mut reduced.m,
+            Attribute::A => &mut reduced.a,
+            Attribute::S => &mut reduced.s,
+        };
+        match rule.bound {
+            Bound::Gt(min) => {
+                if ta.0 >= min {
+                    return None;
+                } else {
+                    ta.1 = min;
+                }
+            }
+            Bound::Lt(max) => {
+                if ta.1 <= max {
+                    return None;
+                } else {
+                    ta.0 = max;
+                }
+            }
+        }
+        Some(reduced)
+    }
+
+    fn count(&self) -> u64 {
+        (self.x.1 - self.x.0 + 1) as u64
+            * (self.m.1 - self.m.0 + 1) as u64
+            * (self.a.1 - self.a.0 + 1) as u64
+            * (self.s.1 - self.s.0 + 1) as u64
+    }
+}
+
+#[aoc(day19, part2)]
+fn solve_part2(input: &Input) -> u64 {
+    let mut current = vec![("in".to_string(), PossibleParts::new())];
+    let mut finals = vec![];
+    'outer: while let Some((rule_name, mut pp)) = current.pop() {
+        let ruleset = &input.rules[&rule_name];
+        for rule in &ruleset.rules {
+            if let Some(reduced) = pp.include(rule) {
+                match &rule.action {
+                    Action::Accept => finals.push(reduced),
+                    Action::Goto(new_rule) => current.push((new_rule.clone(), reduced)),
+                    Action::Reject => {}
+                }
+            }
+            if let Some(reduced) = pp.exclude(rule) {
+                pp = reduced;
+            } else {
+                continue 'outer;
+            }
+        }
+        match &ruleset.default_action {
+            Action::Accept => finals.push(pp),
+            Action::Goto(new_rule) => current.push((new_rule.clone(), pp)),
+            Action::Reject => {}
+        }
+    }
+    finals.iter().map(|pp| pp.count()).sum::<u64>()
 }
