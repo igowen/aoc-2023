@@ -23,7 +23,7 @@ struct Input {
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 struct LightVector {
-    origin: (usize, usize),
+    origin: (i64, i64),
     dir: Dir,
 }
 
@@ -62,8 +62,8 @@ fn trace(input: &Input, start: LightVector) -> i64 {
     let mut splits = vec![];
     while !current.is_empty() {
         for v in current.iter_mut() {
-            energized[v.origin].0 = true;
-            match input.map[v.origin] {
+            energized[(v.origin.0 as usize, v.origin.1 as usize)].0 = true;
+            match input.map[(v.origin.0 as usize, v.origin.1 as usize)] {
                 Mirror::Forward => match v.dir {
                     Dir::E | Dir::W => v.dir = v.dir.ccw(),
                     Dir::N | Dir::S => v.dir = v.dir.cw(),
@@ -96,11 +96,12 @@ fn trace(input: &Input, start: LightVector) -> i64 {
         current.extend(splits.drain(..));
         current.retain_mut(|v| {
             if let Some(next) = v.dir.neighbor(v.origin, &input.map) {
+                let unext = (next.0 as usize, next.1 as usize);
                 let visited = match v.dir {
-                    Dir::N => &mut energized[next].1 .0,
-                    Dir::S => &mut energized[next].1 .1,
-                    Dir::E => &mut energized[next].1 .2,
-                    Dir::W => &mut energized[next].1 .3,
+                    Dir::N => &mut energized[unext].1 .0,
+                    Dir::S => &mut energized[unext].1 .1,
+                    Dir::E => &mut energized[unext].1 .2,
+                    Dir::W => &mut energized[unext].1 .3,
                 };
                 if !*visited {
                     v.origin = next;
@@ -139,14 +140,14 @@ fn solve_part2(input: &Input) -> i64 {
         max = max.max(trace(
             input,
             LightVector {
-                origin: (0, x),
+                origin: (0, x as i64),
                 dir: Dir::S,
             },
         ));
         max = max.max(trace(
             input,
             LightVector {
-                origin: (input.map.num_rows() - 1, x),
+                origin: (input.map.num_rows() as i64 - 1, x as i64),
                 dir: Dir::N,
             },
         ));
@@ -155,14 +156,14 @@ fn solve_part2(input: &Input) -> i64 {
         max = max.max(trace(
             input,
             LightVector {
-                origin: (y, 0),
+                origin: (y as i64, 0),
                 dir: Dir::E,
             },
         ));
         max = max.max(trace(
             input,
             LightVector {
-                origin: (y, input.map.num_columns() - 1),
+                origin: (y as i64, input.map.num_columns() as i64 - 1),
                 dir: Dir::W,
             },
         ));

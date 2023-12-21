@@ -44,16 +44,6 @@ enum Kind {
     Conjunction(HashMap<String, Signal>),
 }
 
-impl Kind {
-    fn conjunction(&self) -> Option<&HashMap<String, Signal>> {
-        if let Kind::Conjunction(v) = self {
-            Some(v)
-        } else {
-            None
-        }
-    }
-}
-
 #[derive(Clone, PartialEq, Eq, Debug)]
 struct Module {
     name: String,

@@ -21,6 +21,24 @@ pub mod day7;
 pub mod day8;
 pub mod day9;
 
+pub trait Plane {
+    fn origin(&self) -> (i64, i64);
+    fn width(&self) -> usize;
+    fn height(&self) -> usize;
+}
+
+impl<T> Plane for array2d::Array2D<T> {
+    fn origin(&self) -> (i64, i64) {
+        (0, 0)
+    }
+    fn width(&self) -> usize {
+        self.num_columns()
+    }
+    fn height(&self) -> usize {
+        self.num_rows()
+    }
+}
+
 #[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
 pub enum Dir {
     N,
@@ -54,35 +72,34 @@ impl Dir {
             Dir::W => Dir::E,
         }
     }
-    pub fn neighbor<T>(
-        self,
-        (y, x): (usize, usize),
-        a: &array2d::Array2D<T>,
-    ) -> Option<(usize, usize)> {
+    pub fn neighbor<P: Plane>(self, (y, x): (i64, i64), p: &P) -> Option<(i64, i64)> {
+        let (min_x, min_y) = p.origin();
+        let max_x = min_x + p.width() as i64;
+        let max_y = min_y + p.height() as i64;
         match self {
             Dir::N => {
-                if y == 0 {
+                if y == min_y {
                     None
                 } else {
                     Some((y - 1, x))
                 }
             }
             Dir::S => {
-                if y >= a.num_rows() - 1 {
+                if y >= max_y - 1 {
                     None
                 } else {
                     Some((y + 1, x))
                 }
             }
             Dir::W => {
-                if x == 0 {
+                if x == min_x {
                     None
                 } else {
                     Some((y, x - 1))
                 }
             }
             Dir::E => {
-                if x >= a.num_columns() - 1 {
+                if x >= max_x - 1 {
                     None
                 } else {
                     Some((y, x + 1))

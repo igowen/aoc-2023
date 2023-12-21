@@ -100,7 +100,9 @@ fn solve_part1(input: &Input) -> i64 {
         for cart in current.drain(..) {
             let partial = sps[cart.pos][cart.dir][cart.dir_remaining as usize].unwrap();
             for dir in [cart.dir.cw(), cart.dir.ccw()].into_iter() {
-                if let Some(pos) = dir.neighbor(cart.pos, &input.map) {
+                if let Some(pos) = dir.neighbor((cart.pos.0 as i64, cart.pos.1 as i64), &input.map)
+                {
+                    let pos = (pos.0 as usize, pos.1 as usize);
                     let next_cart = Cart {
                         pos,
                         dir,
@@ -122,7 +124,11 @@ fn solve_part1(input: &Input) -> i64 {
                 }
             }
             if cart.dir_remaining > 0 {
-                if let Some(pos) = cart.dir.neighbor(cart.pos, &input.map) {
+                if let Some(pos) = cart
+                    .dir
+                    .neighbor((cart.pos.0 as i64, cart.pos.1 as i64), &input.map)
+                {
+                    let pos = (pos.0 as usize, pos.1 as usize);
                     let next_cart = Cart {
                         pos,
                         dir: cart.dir,
@@ -199,7 +205,10 @@ fn solve_part2(input: &Input) -> i64 {
             let partial = sps[cart.pos][cart.dir][cart.dir_remaining as usize].unwrap();
             if cart.dir_remaining < 7 {
                 for dir in [cart.dir.cw(), cart.dir.ccw()].into_iter() {
-                    if let Some(pos) = dir.neighbor(cart.pos, &input.map) {
+                    if let Some(pos) =
+                        dir.neighbor((cart.pos.0 as i64, cart.pos.1 as i64), &input.map)
+                    {
+                        let pos = (pos.0 as usize, pos.1 as usize);
                         let next_cart = Cart {
                             pos,
                             dir,
@@ -222,7 +231,11 @@ fn solve_part2(input: &Input) -> i64 {
                 }
             }
             if cart.dir_remaining > 0 {
-                if let Some(pos) = cart.dir.neighbor(cart.pos, &input.map) {
+                if let Some(pos) = cart
+                    .dir
+                    .neighbor((cart.pos.0 as i64, cart.pos.1 as i64), &input.map)
+                {
+                    let pos = (pos.0 as usize, pos.1 as usize);
                     let next_cart = Cart {
                         pos,
                         dir: cart.dir,
