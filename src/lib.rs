@@ -13,6 +13,7 @@ pub mod day18;
 pub mod day19;
 pub mod day2;
 pub mod day20;
+pub mod day21;
 pub mod day3;
 pub mod day4;
 pub mod day5;
@@ -21,10 +22,24 @@ pub mod day7;
 pub mod day8;
 pub mod day9;
 
+#[derive(PartialEq, Eq, Copy, Clone, Debug, Hash)]
+pub struct Bounds {
+    origin: (i64, i64),
+    width: usize,
+    height: usize,
+}
+
 pub trait Plane {
     fn origin(&self) -> (i64, i64);
     fn width(&self) -> usize;
     fn height(&self) -> usize;
+    fn extract(&self) -> Bounds {
+        Bounds {
+            origin: self.origin(),
+            width: self.width(),
+            height: self.height(),
+        }
+    }
 }
 
 impl<T> Plane for array2d::Array2D<T> {
@@ -36,6 +51,18 @@ impl<T> Plane for array2d::Array2D<T> {
     }
     fn height(&self) -> usize {
         self.num_rows()
+    }
+}
+
+impl Plane for Bounds {
+    fn origin(&self) -> (i64, i64) {
+        self.origin
+    }
+    fn width(&self) -> usize {
+        self.width
+    }
+    fn height(&self) -> usize {
+        self.height
     }
 }
 
@@ -56,6 +83,7 @@ impl Dir {
             Dir::W => Dir::N,
         }
     }
+
     pub fn ccw(self) -> Self {
         match self {
             Dir::N => Dir::W,
@@ -64,6 +92,7 @@ impl Dir {
             Dir::E => Dir::N,
         }
     }
+
     pub fn inverse(self) -> Self {
         match self {
             Dir::N => Dir::S,
@@ -72,6 +101,16 @@ impl Dir {
             Dir::W => Dir::E,
         }
     }
+
+    pub fn delta(self) -> (i64, i64) {
+        match self {
+            Dir::N => (-1, 0),
+            Dir::S => (1, 0),
+            Dir::E => (0, 1),
+            Dir::W => (0, -1),
+        }
+    }
+
     pub fn neighbor<P: Plane>(self, (y, x): (i64, i64), p: &P) -> Option<(i64, i64)> {
         let (min_x, min_y) = p.origin();
         let max_x = min_x + p.width() as i64;
@@ -106,6 +145,48 @@ impl Dir {
                 }
             }
         }
+    }
+
+    pub fn wrapping_neighbor<P: Plane>(self, (y, x): (i64, i64), p: &P) -> (i64, i64) {
+        let (min_x, min_y) = p.origin();
+        let max_x = min_x + p.width() as i64;
+        let max_y = min_y + p.height() as i64;
+        match self {
+            Dir::N => {
+                if y == min_y {
+                    (max_y - 1, x)
+                } else {
+                    (y - 1, x)
+                }
+            }
+            Dir::S => {
+                if y >= max_y - 1 {
+                    (min_y, x)
+                } else {
+                    (y + 1, x)
+                }
+            }
+            Dir::W => {
+                if x == min_x {
+                    (y, max_x - 1)
+                } else {
+                    (y, x - 1)
+                }
+            }
+            Dir::E => {
+                if x >= max_x - 1 {
+                    (y, min_x)
+                } else {
+                    (y, x + 1)
+                }
+            }
+        }
+    }
+    pub fn neighbors<P: Plane>((y, x): (i64, i64), p: &P) -> impl Iterator<Item = (i64, i64)> {
+        let bounds = p.extract();
+        [Dir::N, Dir::S, Dir::E, Dir::W]
+            .into_iter()
+            .filter_map(move |dir| dir.neighbor((y, x), &bounds))
     }
 }
 
