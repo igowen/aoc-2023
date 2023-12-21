@@ -1,3 +1,4 @@
+use crate::gcd;
 use aoc_runner_derive::{aoc, aoc_generator};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -64,14 +65,6 @@ fn solve_part1(input: &Input) -> i64 {
         count += 1;
     }
     count
-}
-
-fn gcd(a: i64, b: i64) -> i64 {
-    if b == 0 {
-        a
-    } else {
-        gcd(b, a % b)
-    }
 }
 
 #[aoc(day8, part2)]
